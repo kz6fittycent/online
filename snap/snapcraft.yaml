@@ -1,0 +1,59 @@
+name: collabora-code
+base: core24
+adopt-info: collabora-code
+summary: Collabora Online Development Edition
+description: |
+  Your own private Office in the Cloud - Collabora Online Development Edition
+
+grade: stable
+confinement: strict
+source-code: https://github.com/CollaboraOnline/online
+issues: https://github.com/CollaboraOnline/online/issues
+contact: https://github.com/CollaboraOnline/online
+license: Mozilla
+
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
+  arm64:
+    build-on: [arm64]
+    build-for: [arm64]
+  armhf:
+    build-on: [armhf]
+    build-for: [armhf]
+  ppc64el:
+    build-on: [ppc64el]
+    build-for: [ppc64el]
+  s390x:
+    build-on: [s390x]
+    build-for: [s390x]
+
+apps:
+  collabora-code:
+    command: ./coolwsd --o:sys_template_path=${SYSTEMPLATE} --o:child_root_path=${ROOTFORJAILS}
+    daemon: simple
+    restart-condition: always     
+    plugs:
+      - network
+      - network-bind
+
+parts:
+  collabora-code:
+    source: https://github.com/CollaboraOnline/online
+    source-type: git
+    plugin: autotools
+    autotools-configure-parameters:
+      - --with-lo-path=/usr/bin/libreoffice
+    build-packages:
+      - libpoco-dev
+      - libpng-dev
+      - libcap-dev 
+      - libpam-dev
+      - python3-lxml
+      - python3-polib
+      - libreoffice
+      
+    override-pull: |
+      craftctl default
+      craftctl set version="$(git describe --tags | sed 's/^v//' | cut -d "-" -f4)" 
